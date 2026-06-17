@@ -34,7 +34,12 @@
        document.getElementById('make-post').hidden;
     }
 
-
+    if (posthog.getFeatureFlag('experiment-user-button-style') === 'test') {
+    // Do something differently for this user
+    } else {
+        // It's a good idea to let control variant always be the default behaviour,
+        // so if something goes wrong with flag evaluation, you don't break your app.
+    }
 
     // Create a new post (POST)
     async function createPost(title, text) {
