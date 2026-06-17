@@ -9,6 +9,7 @@
   <h1>Make Post</h1>
 
   <form id="post-form">
+    <input type="text" id="title-input" placeholder="Post-Title" required/>
     <input type="text" id="post-input" placeholder="Add a new Post" required/>
     <button id="make-post" type="submit">Post</button>
   </form>
@@ -23,37 +24,25 @@
   </script>
   <script>
     const API_BASE = '/api/v1/posts';
-    const todoForm = document.getElementById('post-form');
-    const todoInput = document.getElementById('post-input');
+    const postForm = document.getElementById('post-form');
+    const postInput = document.getElementById('post-input');
+    const titleInput = document.getElementById('title-input');
 
-    /*
-    posthog.onFeatureFlags(function() {
-      // feature flags should be available at this point
-      if (posthog.isFeatureEnabled('button-text') ) {
-        document.getElementById('make-post').textContent = 'Add New Todo';
-      }
 
-      // Get the variant for the input label from the feature flag 'input-label'
-      const variant = posthog.getFeatureFlag('input-label');
-      const labelText = variant === 'test' ? 'Test Input Label' : 'Default Input Label';
-
-      // Create and insert the new label element before the todo input field
-      const inputLabel = document.createElement('label');
-      inputLabel.textContent = labelText;
-      inputLabel.setAttribute('for', 'todo-input');
-      todoForm.insertBefore(inputLabel, todoInput);
-    });
-    */
+    if (!posthog.isFeatureEnabled('is-post-creation-enabled') ) {
+    // do something
+       document.getElementById('make-post').hidden;
+    }
 
 
 
     // Create a new post (POST)
-    async function createPost(text) {
+    async function createPost(title, text) {
       try {
         const response = await fetch(API_BASE, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ text, isDone: false })
+          body: JSON.stringify({ title: title, content: text, userId: 1 })
         });
         if (!response.ok) {
           const { error } = await response.json();
@@ -65,15 +54,16 @@
     }
 
 
-
     // Handle form submission to create a new post
     // the events are tracked by default and categorized by variants
-    todoForm.addEventListener('submit', event => {
+    postForm.addEventListener('submit', event => {
       event.preventDefault();
-      const text = todoInput.value.trim();
-      if (text) {
-        createPost(text);
-        todoInput.value = '';
+      const text = postInput.value.trim();
+      const title = titleInput.value.trim();
+      if (text && title) {
+        createPost(title, text);
+
+        postInput.value = '';
       }
     });
 
