@@ -119,7 +119,7 @@
       event.preventDefault();
       const un = usernameInput.value.trim();
       const em = emailInput.value.trim();
-      if (text && title) {
+      if (un && em) {
         createUser(un, em);
 
         usernameInput.value = '';
