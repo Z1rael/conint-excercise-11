@@ -1,12 +1,24 @@
 import fastify, { FastifyRequest } from 'fastify';
+import fastifyStatic from '@fastify/static';
 import { PrismaClient } from '@prisma/client';
 import { isValidEmail } from './services/isValidEmail';
+import posthogPlugin from './plugins/posthog'
+
 
 const prisma = new PrismaClient();
 const server = fastify();
 
 const PORT = process.env.PORT || 5000;
 const HOST = process.env.HOST || '127.0.0.1';
+
+// register the posthog plugin in fastify
+server.register(posthogPlugin);
+
+server.register(fastifyStatic, {
+  root: `${__dirname}/public`,
+  prefix: '/',
+});
+
 
 /**
  * USERS CRUD
@@ -69,6 +81,16 @@ server.post('/api/v1/users', async (
         email,
       },
     });
+
+    request.server.posthog.capture({
+      distinctId: email,
+      event: 'new user created',
+      properties: {
+        name: name,
+        email: email,
+      },
+    });
+
     return reply.status(201).send({ user });
   } catch (error: any) {
     return reply.status(500).send({ error: error?.message });
@@ -191,6 +213,16 @@ server.post('/api/v1/posts', async (
         },
       },
     });
+
+    request.server.posthog.capture({
+      distinctId: userId.toString(),
+      event: 'new post created',
+      properties: {
+        title: title,
+        content: content,
+      },
+    });
+
     return reply.status(201).send({ post });
   } catch (error: any) {
     return reply.status(500).send({ error: error?.message });
