@@ -43,10 +43,15 @@
     });
   </script>
   <script>
-    const API_BASE = '/api/v1/posts';
+    const API_BASE = '/api/v1/';
     const postForm = document.getElementById('post-form');
     const postInput = document.getElementById('post-input');
     const titleInput = document.getElementById('title-input');
+
+
+    const loginForm = document.getElementById('user-registration');
+    const usernameInput = document.getElementById('username');
+    const emailInput = document.getElementById('email-user');
 
 
     //Fearture Toggle 
@@ -65,10 +70,26 @@
     // Create a new post (POST)
     async function createPost(title, text) {
       try {
-        const response = await fetch(API_BASE, {
+        const response = await fetch(API_BASE+"posts", {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ title: title, content: text, userId: 1 })
+        });
+        if (!response.ok) {
+          const { error } = await response.json();
+          alert(error);
+        }
+      } catch (error) {
+        console.error('Error creating post:', error);
+      }
+    }
+
+    async function createUser(un, em) {
+      try {
+        const response = await fetch(API_BASE+"users", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: un, email: em})
         });
         if (!response.ok) {
           const { error } = await response.json();
@@ -88,6 +109,17 @@
       const title = titleInput.value.trim();
       if (text && title) {
         createPost(title, text);
+
+        postInput.value = '';
+      }
+    });
+
+    loginForm.addEventListener('submit', event => {
+      event.preventDefault();
+      const un = usernameInput.value.trim();
+      const em = emailInput.value.trim();
+      if (text && title) {
+        createUser(un, em);
 
         postInput.value = '';
       }
