@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="index.css">
   <title>Post-Dialog</title>
 </head>
 <body>
@@ -29,17 +30,18 @@
     const titleInput = document.getElementById('title-input');
 
 
+    //Fearture Toggle 
     if (!posthog.isFeatureEnabled('is-post-creation-enabled') ) {
-    // do something
        document.getElementById('make-post').hidden;
     }
 
+    //A-B Green-Blue 
     if (posthog.getFeatureFlag('experiment-user-button-style') === 'test') {
-    // Do something differently for this user
+      document.getElementById('make-post').classList.add("blue")
     } else {
-        // It's a good idea to let control variant always be the default behaviour,
-        // so if something goes wrong with flag evaluation, you don't break your app.
+       document.getElementById('make-post').classList.add("green")
     }
+
 
     // Create a new post (POST)
     async function createPost(title, text) {
